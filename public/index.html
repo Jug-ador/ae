@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Home </title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header><nav id="nav-links"></nav></header>
+  <div class="page-container">
+    <h1>Welcome to Armored engineering!</h1>
+    <div id="product-list"></div>
+  </div>
+  <script>
+    async function loadProducts() {
+      const products = await fetchJson('/user/products');
+      const list = document.getElementById('product-list');
+      products.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'product-card';
+        div.innerHTML = `
+          <img src="${p.imageUrl}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>${p.description}</p>
+          <strong>$${p.price.toFixed(2)}</strong>
+          <button data-id="${p._id}" onclick="addToCart(this)">Add to Cart</button>
+        `;
+        list.append(div);
+      });
+    }
+
+    async function addToCart(btn) {
+      const id = btn.getAttribute('data-id');
+      await fetchJson('/user/cart', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ productId: id, quantity: 1 })
+      });
+      alert('Added to cart');
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>

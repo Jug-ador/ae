@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile - Armored engineering</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header><nav id="nav-links"></nav></header>
+  <div class="page-container">
+    <h2>Your Profile</h2>
+    <div id="profile-info"></div>
+    <form id="avatar-form" enctype="multipart/form-data">
+      <label>Upload Avatar:
+        <input type="file" name="avatar" accept="image/png, image/jpeg" required>
+      </label>
+      <button type="submit">Upload Avatar</button>
+    </form>
+    <img id="avatar-img" class="avatar" src="" alt="Your Avatar">
+  </div>
+  <script>
+    async function loadProfile() {
+      const res = await fetchJson('/user/profile');
+      document.getElementById('profile-info').innerHTML = `
+        <p><strong>Name:</strong> ${res.name}</p>
+        <p><strong>Email:</strong> ${res.email}</p>
+      `;
+      if (res.avatarUrl) {
+        document.getElementById('avatar-img').src = res.avatarUrl;
+      }
+    }
+
+    document.getElementById('avatar-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const res = await fetch(`${apiBase}/user/profile/avatar`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+        body: formData
+      });
+      const json = await res.json();
+      if (json.avatarUrl) {
+        document.getElementById('avatar-img').src = json.avatarUrl;
+      }
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

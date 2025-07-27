@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Sign Up </title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header><nav id="nav-links"></nav></header>
+  <div class="page-container">
+    <h2>Create Account</h2>
+    <form id="signup-form">
+      <label>Name: <input name="name" required></label>
+      <label>Email: <input name="email" type="email" required></label>
+      <label>Password: <input name="password" type="password" required></label>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </div>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const data = { name: form.name.value, email: form.email.value, password: form.password.value };
+      const res = await fetch(`${apiBase}/auth/signup`, {
+        method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (result.token) {
+        localStorage.setItem('token', result.token);
+        window.location = 'index.html';
+      } else {
+        alert(result.error || 'Signup failed');
+      }
+    });
+  </script>
+</body>
+</html>
